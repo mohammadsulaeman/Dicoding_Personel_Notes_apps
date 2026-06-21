@@ -8,7 +8,8 @@ class NoteInput extends React.Component {
       // TODO [Basic] kelola nilai title sebagai controlled input.
       title: '',
       // TODO [Basic] kelola nilai body sebagai controlled textarea.
-      body: ''
+      body: '',
+      error: '',
     };
 
     this.onTitleChangeEventHandler = this.onTitleChangeEventHandler.bind(this);
@@ -19,11 +20,23 @@ class NoteInput extends React.Component {
   onTitleChangeEventHandler(event) {
     // TODO [Basic] update state dengan nilai event.target.value.
     // TODO [Skilled] batasi judul maksimal 50 karakter dan tampilkan peringatan saat sisa karakter < 10.
+    const value = event.target.value;
+
+    if ( value.length <= 50 ) {
+      this.setState({
+        title: value
+      });
+
+    }
     console.warn('[TODO] Handle title change', event.target.value);
   }
 
   onBodyChangeEventHandler(event) {
     // TODO [Basic] update state body agar textarea menjadi controlled component.
+    this.setState({
+      body: event.target.value
+    });
+
     console.warn('[TODO] Handle body change', event.target.value);
   }
 
@@ -32,18 +45,42 @@ class NoteInput extends React.Component {
 
     // TODO [Basic] panggil props.addNote dengan data title & body dari state, lalu reset form.
     // TODO [Advanced] tolak submit ketika body kurang dari 10 karakter dan tampilkan pesan error.
-    console.warn('[TODO] Submit note', this.state);
+    if (this.state.body.trim().length < 10) {
+      this.setState({
+        error: 'Isi Catatan Wajib Minimal 10 Karakter'
+      });
+      return;
+    }
+
+    this.props.addNote(this.state);
+
+
+    this.setState({
+      title: '',
+      body: '',
+      error: '',
+    });
+
+
+    // console.warn('[TODO] Submit note', this.state);
   }
 
   render() {
     // TODO [Skilled] hitung sisa karakter jika menerapkan limit 50 karakter.
-    const remainingChars = 100; // update dengan nilai yang sesuai
+    const remainingChars = 50 - this.state.title.length; // update dengan nilai yang sesuai
 
     return (
       <div className="note-input" data-testid="note-input">
         <h2>Buat catatan</h2>
 
-        {/* // TODO [Advanced] tampilkan pesan error menggunakan elemen dengan class note-input__feedback--error. */}
+        {/* // TODO [Advanced] tampilkan pesan error menggunakan elemen dengan class note-input__feedback--error. */
+        
+            this.state.error && (
+              <p className='note-input__feedback--error'>
+                {this.state.error}
+              </p>
+            )
+        }
 
         <form
           onSubmit={this.onSubmitEventHandler}
